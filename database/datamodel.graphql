@@ -1,0 +1,63 @@
+type WineTaster {
+  id: ID! @unique
+  name: String! @unique
+  nationality: String
+  gender: Gender
+  age: Int
+  favouriteWine: Wine
+  reviews: [Review!]!
+}
+
+type Wine {
+  id: ID! @unique
+  name: String!
+  grapes: [WineGrapes]
+  winery: String
+  year: Int
+  alcohol: Float
+  price: Float
+}
+
+type Review {
+  id: ID! @unique
+  wine: Wine!
+  wineTaster: WineTaster!
+  tastingSession: TastingSession!
+  score: Int
+  tastingNotes: [TastingNotes]
+}
+
+type TastingSession {
+  id: ID! @unique
+  wines: [Wine!]!
+  wineTasters: [WineTaster!]!
+  reviews: [Review!]!
+}
+
+enum WineGrapes {
+  RIESLING
+  GEWURZTRAMINER
+  CHARDONNAY
+  SAUVIGNON_BLANC
+  SYRAH
+  MERLOT
+  CABERNET_SAUVIGNON
+  PINOT_NOIR
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum TastingNotes {
+  ACIDIC
+  BARNYARD
+  BRIGHT
+  BUTTERY
+  COMPLEX
+  CRISP
+  EARTHY
+  OAKED
+  JUICY
+}
