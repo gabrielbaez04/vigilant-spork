@@ -14,6 +14,7 @@ class CreateWineTaster extends Component {
     gender: "MALE",
     age: undefined,
     favouriteWine: undefined,
+    email:"",
   };
 
   toggle = () => {
@@ -34,6 +35,7 @@ class CreateWineTaster extends Component {
       gender,
       age,
       favouriteWine,
+      email,
     } = this.state;
     return (
       <div>
@@ -79,6 +81,12 @@ class CreateWineTaster extends Component {
               childCB={id => this.setState({ favouriteWine: id })}
               placeholder="Favourite Wine"
             />
+            <input
+              name="email"
+              value={email}
+              onChange={this.inputHandler}
+              placeholder="Email"
+            />
             <Mutation
               mutation={CREATE_WINE_TASTER}
               update={(cache, { data: { createWineTaster } }) => {
@@ -96,6 +104,7 @@ class CreateWineTaster extends Component {
                 gender,
                 age,
                 favouriteWine,
+                email
               }}
               onCompleted={() =>
                 this.setState({
@@ -105,6 +114,7 @@ class CreateWineTaster extends Component {
                   gender: "MALE",
                   age: undefined,
                   favouriteWine: undefined,
+                  email:""
                 })
               }
             >

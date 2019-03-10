@@ -5,8 +5,10 @@ import CREATE_REVIEW from "../../../graphql/mutations/CREATE_REVIEW";
 
 class CreateReview extends Component {
   state = {
-    score: undefined,
+    score: "",
     tastingNotes: [],
+    predictedPrice: "",
+    predictedYear: ""
   };
 
   inputHandler = e => {
@@ -16,13 +18,13 @@ class CreateReview extends Component {
         tastingNotes: [...e.target.selectedOptions].map(o => o.value),
       });
     } else {
-      if (name === "score") value = Number(value);
+      if (name === "score" || name==="predictedYear" || name=== "predictedPrice") value = Number(value);
       this.setState({ [name]: value });
     }
   };
 
   render() {
-    const { score, tastingNotes } = this.state;
+    const { score, tastingNotes, predictedPrice, predictedYear } = this.state;
     const { wineTaster, wine, tastingSession } = this.props;
     return (
       <div>
@@ -53,6 +55,20 @@ class CreateReview extends Component {
             <option value="OAKED">OAKED</option>
             <option value="JUICY">JUICY</option>
           </select>
+          <input
+            name="predictedPrice"
+            value={predictedPrice}
+            onChange={this.inputHandler}
+            type="number"
+            placeholder="Predicted price"
+          />
+          <input
+            name="predictedYear"
+            value={predictedYear}
+            onChange={this.inputHandler}
+            type="number"
+            placeholder="Predicted year"
+          />
         </div>
         <Mutation
           mutation={CREATE_REVIEW}
@@ -62,6 +78,8 @@ class CreateReview extends Component {
             tastingSession,
             score,
             tastingNotes,
+            predictedPrice,
+            predictedYear
           }}
         >
           {postMutation => <button onClick={postMutation}>Submit</button>}
