@@ -11,7 +11,18 @@ const ListWines = props => {
         if (loading) return "LOADING";
         if (error) return `Error! ${error.message}`;
         const { wines } = data;
-
+        //Merging wines of the session with the ones in the LOCAL_STORAGE
+        props.prevSessionWines && props.prevSessionWines.forEach(prevWine => {
+          wines.forEach((wine)=>{
+            if(wine.id === prevWine.id){
+              props.addWine({
+                variables: {
+                  ...wine
+                },
+              });
+            }
+          })
+        });
         return (
           <select
             onChange={e => {

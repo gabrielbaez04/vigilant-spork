@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Mutation } from "react-apollo";
 
 import CreateTastingSession from "./Form/CreateTastingSession";
+import ListSessions from "./ListSessions";
 
 import CREATE_TASTING_SESSION from "../../graphql/mutations/CREATE_TASTING_SESSION";
 import LOCAL_TASTING_SESSION from "../../graphql/queries/LOCAL_TASTING_SESSION";
@@ -9,14 +10,15 @@ import LOCAL_TASTING_SESSION from "../../graphql/queries/LOCAL_TASTING_SESSION";
 class Home extends Component {
   state = {
     isOpen: false,
+    tastingSession: undefined
   };
 
-  toggle = () => {
-    this.setState({ isOpen: !this.state.isOpen });
+  toggle = (tastingSession) => {
+    this.setState({ isOpen: !this.state.isOpen, tastingSession });
   };
 
   render() {
-    const { isOpen } = this.state;
+    const { isOpen, tastingSession } = this.state;
     return (
       <React.Fragment>
         <Mutation
@@ -36,12 +38,13 @@ class Home extends Component {
           }}
         >
           {postMutation => (
-            <button onClick={isOpen ? null : postMutation}>
+            !isOpen && <button onClick={isOpen ? null : postMutation}>
               Create New Tasting Session
             </button>
           )}
         </Mutation>
-        {isOpen ? <CreateTastingSession toggle={this.toggle} /> : null}
+        {isOpen ? <CreateTastingSession toggle={this.toggle} tastingSession={tastingSession}/> : null}
+        {!isOpen && <ListSessions toggleProps={this.toggle}/>}
       </React.Fragment>
     );
   }

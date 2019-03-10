@@ -11,7 +11,18 @@ const ListWineTasters = props => {
         if (loading) return "LOADING";
         if (error) return `Error! ${error.message}`;
         const { wineTasters } = data;
-
+        //Merging wines taster of the session with the ones in the LOCAL_STORAGE
+        props.prevSessionWinesTasters && props.prevSessionWinesTasters.forEach(prevWineTaster => {
+          wineTasters.forEach((wineTaster)=>{
+            if(wineTaster.id === prevWineTaster.id){
+              props.addWineTaster({
+                variables: {
+                  ...wineTaster
+                },
+              });
+            }
+          })
+        });
         return (
           <select
             onChange={e => {
