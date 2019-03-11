@@ -4,6 +4,7 @@ const ADD_WINE = gql`
     $id: ID
     $name: String
     $grapes: WineCreategrapesInput
+    $wineType: WineType
     $winery: String
     $year: Int
     $alcohol: Float
@@ -14,6 +15,7 @@ const ADD_WINE = gql`
         id: $id
         name: $name
         grapes: $grapes
+        wineType: $wineType
         winery: $winery
         year: $year
         alcohol: $alcohol

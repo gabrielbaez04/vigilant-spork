@@ -4,12 +4,14 @@ const UPDATE_TASTING_SESSION = gql`
     $sessionWineIDs: [WineWhereUniqueInput!]
     $sessionWineTastersIDs: [WineTasterWhereUniqueInput!]
     $sessionID: ID!
+    $date: String
   ) {
     updateTastingSession(
       where: { id: $sessionID }
       data: {
         wines: { connect: $sessionWineIDs }
         wineTasters: { connect: $sessionWineTastersIDs }
+        date: $date
       }
     ) {
       id

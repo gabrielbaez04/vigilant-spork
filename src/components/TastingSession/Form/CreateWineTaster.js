@@ -1,10 +1,43 @@
 import React, { Component } from "react";
 import { Mutation } from "react-apollo";
+import { withStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
+import Input from '@material-ui/core/Input';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import InputLabel from '@material-ui/core/InputLabel';
+import FormControl from '@material-ui/core/FormControl';
+import TextField from '@material-ui/core/TextField';
 
 import ListWines from "./ListWines";
 
 import WINE_TASTERS from "../../../graphql/queries/WINE_TASTERS";
 import CREATE_WINE_TASTER from "../../../graphql/mutations/CREATE_WINE_TASTER";
+
+const styles = theme => ({
+  button: {
+    margin: theme.spacing.unit,
+  },
+  input: {
+    margin: theme.spacing.unit,
+    padding: theme.spacing.unit,
+  },
+  container: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    alignItems: 'flex-end'
+  },
+  textField:{
+    padding: theme.spacing.unit,
+  },
+  formControl: {
+    margin: theme.spacing.unit,
+    padding: theme.spacing.unit,
+    minWidth: 120,
+    maxWidth: 300,
+  },
+});
 
 class CreateWineTaster extends Component {
   state = {
@@ -12,8 +45,9 @@ class CreateWineTaster extends Component {
     name: "",
     nationality: "",
     gender: "MALE",
-    age: undefined,
-    favouriteWine: undefined,
+    age: 0,
+    favouriteWine: "",
+    email:"",
   };
 
   toggle = () => {
@@ -22,7 +56,7 @@ class CreateWineTaster extends Component {
 
   inputHandler = e => {
     let { name, value } = e.target;
-    if (name === "number") value = Number(value);
+    if (name === "number" || name === "age") value = Number(value);
     this.setState({ [name]: value });
   };
 
@@ -34,10 +68,12 @@ class CreateWineTaster extends Component {
       gender,
       age,
       favouriteWine,
+      email,
     } = this.state;
+    const { classes } = this.props;
     return (
       <div>
-        <button onClick={this.toggle}>Create New Wine Taster</button>
+        <Button variant="outlined" color="primary" className={classes.button} onClick={this.toggle}>Create New Wine Taster</Button>
 
         {isOpen ? (
           <div
@@ -48,68 +84,108 @@ class CreateWineTaster extends Component {
               borderRadius: "2%",
             }}
           >
-            <input
-              name="name"
-              value={name}
-              onChange={this.inputHandler}
-              placeholder="Name"
-            />
-            <input
-              name="nationality"
-              value={nationality}
-              onChange={this.inputHandler}
-              placeholder="Nationality"
-            />
-            <select
-              name="gender"
-              value={this.state.gender}
-              onChange={e => this.setState({ gender: e.target.value })}
-            >
-              <option value="MALE">Male</option>
-              <option value="FEMALE">Female</option>
-            </select>
-            <input
-              name="age"
-              value={age}
-              onChange={e => this.setState({ age: Number(e.target.value) })}
-              type="number"
-              placeholder="Age"
-            />
-            <ListWines
-              childCB={id => this.setState({ favouriteWine: id })}
-              placeholder="Favourite Wine"
-            />
-            <Mutation
-              mutation={CREATE_WINE_TASTER}
-              update={(cache, { data: { createWineTaster } }) => {
-                const { wineTasters } = cache.readQuery({
-                  query: WINE_TASTERS,
-                });
-                cache.writeQuery({
-                  query: WINE_TASTERS,
-                  data: { wineTasters: wineTasters.concat([createWineTaster]) },
-                });
-              }}
-              variables={{
-                name,
-                nationality,
-                gender,
-                age,
-                favouriteWine,
-              }}
-              onCompleted={() =>
-                this.setState({
-                  isOpen: false,
-                  name: "",
-                  nationality: "",
-                  gender: "MALE",
-                  age: undefined,
-                  favouriteWine: undefined,
-                })
-              }
-            >
-              {postMutation => <button onClick={postMutation}>Submit</button>}
-            </Mutation>
+            <div className={classes.container}>
+              <Input
+                name="name"
+                value={name}
+                onChange={this.inputHandler}
+                type="text"
+                placeholder="Name"
+                inputProps={{
+                  'aria-label': 'Description',
+                }}
+                className={classes.input}
+              />
+              <Input
+                name="nationality"
+                value={nationality}
+                onChange={this.inputHandler}
+                type="text"
+                placeholder="Nationality"
+                inputProps={{
+                  'aria-label': 'Description',
+                }}
+                className={classes.input}
+              />
+              <FormControl className={classes.formControl}>
+                <InputLabel htmlFor="gender-select">Gender</InputLabel>
+                <Select
+                  name="gender"
+                  value={this.state.gender}
+                  onChange={e => this.setState({ gender: e.target.value })}
+                    inputProps={{
+                      name: 'gender',
+                      id: 'gender-select',
+                    }}
+                >
+                  <MenuItem value="MALE">Male</MenuItem>
+                  <MenuItem value="FEMALE">Female</MenuItem>
+                </Select>
+              </FormControl>
+              <TextField
+                id="age"
+                label="Age"
+                name="age"
+                value={age}
+                onChange={this.inputHandler}
+                type="number"
+                className={classes.textField}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                margin="normal"
+              />
+              <ListWines
+                childCB={id => this.setState({ favouriteWine: id })}
+                placeholder="Favourite Wine"
+              />
+              <Input
+                name="email"
+                value={email}
+                onChange={this.inputHandler}
+                type="text"
+                placeholder="Email"
+                inputProps={{
+                  'aria-label': 'Description',
+                }}
+                className={classes.input}
+              />
+            </div>
+            <div className={classes.container}>
+              <Mutation
+                mutation={CREATE_WINE_TASTER}
+                update={(cache, { data: { createWineTaster } }) => {
+                  const { wineTasters } = cache.readQuery({
+                    query: WINE_TASTERS,
+                  });
+                  cache.writeQuery({
+                    query: WINE_TASTERS,
+                    data: { wineTasters: wineTasters.concat([createWineTaster]) },
+                  });
+                }}
+                variables={{
+                  name,
+                  nationality,
+                  gender,
+                  age,
+                  favouriteWine,
+                  email
+                }}
+                onCompleted={() =>
+                  this.setState({
+                    isOpen: false,
+                    name: "",
+                    nationality: "",
+                    gender: "MALE",
+                    age: undefined,
+                    favouriteWine: undefined,
+                    email:""
+                  })
+                }
+              >
+                {postMutation => <Button variant="contained" color="primary" className={classes.button} onClick={postMutation}>Submit</Button>}
+              </Mutation>
+            </div>
           </div>
         ) : null}
       </div>
@@ -117,4 +193,4 @@ class CreateWineTaster extends Component {
   }
 }
 
-export default CreateWineTaster;
+export default withStyles(styles)(CreateWineTaster);

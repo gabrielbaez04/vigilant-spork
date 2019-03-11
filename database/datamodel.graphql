@@ -1,3 +1,4 @@
+
 type WineTaster {
   id: ID! @unique
   name: String! @unique
@@ -6,16 +7,20 @@ type WineTaster {
   age: Int
   favouriteWine: Wine
   reviews: [Review!]!
+  email: String
 }
 
 type Wine {
   id: ID! @unique
   name: String!
   grapes: [WineGrapes]
+  wineType: WineType
   winery: String
   year: Int
   alcohol: Float
   price: Float
+  sugarContent: String
+  bottleSize: String
 }
 
 type Review {
@@ -25,6 +30,8 @@ type Review {
   tastingSession: TastingSession!
   score: Int
   tastingNotes: [TastingNotes]
+  predictedPrice: Int
+  predictedYear: Int
 }
 
 type TastingSession {
@@ -32,6 +39,7 @@ type TastingSession {
   wines: [Wine!]!
   wineTasters: [WineTaster!]!
   reviews: [Review!]!
+  date: String
 }
 
 enum WineGrapes {
@@ -43,6 +51,15 @@ enum WineGrapes {
   MERLOT
   CABERNET_SAUVIGNON
   PINOT_NOIR
+}
+
+enum WineType {
+  RED
+  WHITE
+  ROSE
+  SPARKLING
+  DESSERT
+  FORTIFIED
 }
 
 enum Gender {
