@@ -4,6 +4,8 @@ import moment from 'moment';
 import { SingleDatePicker } from 'react-dates';
 import 'react-dates/lib/css/_datepicker.css';
 import 'react-dates/initialize';
+import { withStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
 
 import ListWines from "./ListWines";
 import ListWineTasters from "./ListWineTasters";
@@ -14,6 +16,15 @@ import CreateReview from "./CreateReview";
 import UPDATE_TASTING_SESSION from "../../../graphql/mutations/UPDATE_TASTING_SESSION";
 import LOCAL_STATE from "../../../graphql/queries/LOCAL_TASTING_SESSION";
 import initialState from "../../../graphql/initialState";
+
+const styles = theme => ({
+  button: {
+    margin: theme.spacing.unit,
+  },
+  input: {
+    display: 'none',
+  },
+});
 
 class CreateTastingSession extends React.Component {
   constructor(props) {
@@ -37,6 +48,7 @@ class CreateTastingSession extends React.Component {
     return (
       <Query query={LOCAL_STATE}>
         {({ loading, error, data }) => {
+          
           if (loading) return "LOADING";
           if (error) return `Error! ${error.message}`;
           let prevSessionWinesTasters, prevSessionWines = [];
@@ -59,6 +71,7 @@ class CreateTastingSession extends React.Component {
             return { id: taster.id };
           });
           const { date } = this.state;
+          const { classes } = this.props;
           return (
             <div>
               <h3>Tasting Session</h3>
@@ -71,7 +84,8 @@ class CreateTastingSession extends React.Component {
                 numberOfMonths={1}
                 isOutsideRange={() => false}
               />
-              <ol
+              <h5>Choose Wine(s)</h5>
+              <ul
                 style={{
                   display: "flex",
                   flexDirection: "row",
@@ -87,8 +101,7 @@ class CreateTastingSession extends React.Component {
                       );
                     })
                   : null}
-              </ol>
-              <h5>Choose Wine(s)</h5>
+              </ul>
               <ListWines
                 cb={wine => {
                   if (!wine.includes(wine)) {
@@ -101,12 +114,12 @@ class CreateTastingSession extends React.Component {
                 prevSessionWines={prevSessionWines}
               />
               <CreateWine />
-
-              <ol>
+              <h5>Choose Wine Taster(s)</h5>
+              <ul>
                 {sessionWineTasters
                   ? sessionWineTasters.map((taster, i) => {
                       return (
-                        <li key={`sessionTasters${i}`}>
+                        <li key={`sessionTasters${i}`} style={{ listStyle: "none" }}>
                           <div>
                             {taster.name}
                             <div
@@ -122,6 +135,7 @@ class CreateTastingSession extends React.Component {
                                     <CreateReview
                                       wineTaster={taster.id}
                                       wine={wine.id}
+                                      wineName = {wine.name}
                                       tastingSession={sessionID}
                                     />
                                   </div>
@@ -133,12 +147,11 @@ class CreateTastingSession extends React.Component {
                       );
                     })
                   : null}
-              </ol>
-              <h5>Choose Wine Taster(s)</h5>
+              </ul>
               <ListWineTasters placeholder="Existing Wine Tester" prevSessionWinesTasters={prevSessionWinesTasters}/>
               <CreateWineTaster />
-              {this.props.tastingSession && <button
-                onClick={() => {this.props.toggle(); window.location.reload()}}
+              {this.props.tastingSession && <Button variant="contained" className={classes.button}
+                onClick={() => {this.props.toggle()}}
                 style={{
                   padding: "10px",
                   margin: "30px",
@@ -146,7 +159,7 @@ class CreateTastingSession extends React.Component {
                 }}
               >
                 RETURN
-              </button>
+              </Button>
               }
               <Mutation
                 mutation={UPDATE_TASTING_SESSION}
@@ -157,10 +170,10 @@ class CreateTastingSession extends React.Component {
                     data: initialState,
                   });
                 }}
-                onCompleted={() => {this.props.toggle(); window.location.reload()}}
+                onCompleted={() => {this.props.toggle()}}
               >
                 {postMutation => (
-                  <button
+                  <Button variant="contained" color="primary" className={classes.button}
                     onClick={postMutation}
                     style={{
                       padding: "10px",
@@ -169,7 +182,7 @@ class CreateTastingSession extends React.Component {
                     }}
                   >
                     Submit Form
-                  </button>
+                  </Button>
                 )}
               </Mutation>
             </div>
@@ -184,4 +197,4 @@ export default compose(
   graphql(UPDATE_TASTING_SESSION, {
     name: "updateTastingSession",
   })
-)(CreateTastingSession);
+)(withStyles(styles)(CreateTastingSession));
